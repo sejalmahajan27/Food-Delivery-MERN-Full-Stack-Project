@@ -6,7 +6,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // placing user order from frontend
 const placeOrder = async (req, res) => {
-  const frontend_url = "http://localhost:5174";
+  const frontend_url = "https://food-delivery-mern-full-stack-project-k4sh.onrender.com";
   const USD_TO_INR = 83; // approx. conversion rate
 
   try {
