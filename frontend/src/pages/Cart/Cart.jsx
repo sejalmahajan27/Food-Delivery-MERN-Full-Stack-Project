@@ -20,49 +20,47 @@ const Cart = () => {
         </div>
         <br />
         <hr />
-        {food_list && food_list.length > 0 && food_list.map((item, index) => {
-          if (cartItems && cartItems[item._id] > 0) {
-            return (
-              <div key={index}>
-                <div className='cart-items-title cart-items-item'>
-                  <img src={url + "/images/" + item.image} alt="" />
-                  <p>{item.name}</p>
-                  <p>${item.price}</p>
-                  <p>{cartItems[item._id]}</p>
-                  <p>${item.price * cartItems[item._id]}</p>
-                  <p onClick={() => removeFromCart(item._id)} className='cross'>x</p>
-                </div>
-                <hr />
-              </div>
-            );
-          } else {
-            return null;
-          }
-        })}
 
-        : (
-        <p>Loading cart items...</p>
-        )
+        {food_list && food_list.length > 0 ? (
+          food_list.map((item, index) => {
+            const quantity = cartItems?.[item._id] || 0;
+            if (quantity > 0) {
+              return (
+                <div key={index}>
+                  <div className='cart-items-title cart-items-item'>
+                    <img src={`${url}/images/${item.image}`} alt={item.name} />
+                    <p>{item.name}</p>
+                    <p>${item.price}</p>
+                    <p>{quantity}</p>
+                    <p>${item.price * quantity}</p>
+                    <p onClick={() => removeFromCart(item._id)} className='cross'>x</p>
+                  </div>
+                  <hr />
+                </div>
+              );
+            } else return null;
+          })
+        ) : (
+          <p>Loading cart items...</p>
+        )}
       </div>
 
       <div className="cart-bottom">
         <div className="cart-total">
           <h2>Cart Totals</h2>
-          <div>
-            <div className="cart-total-details">
-              <p>Subtotal</p>
-              <p>${getTotalCartAmount()}</p>
-            </div>
-            <hr />
-            <div className="cart-total-details">
-              <p>Delivery Fee</p>
-              <p>${getTotalCartAmount() === 0 ? 0 : 2}</p>
-            </div>
-            <hr />
-            <div className="cart-total-details">
-              <b>Total</b>
-              <b>${getTotalCartAmount() === 0 ? 0 : getTotalCartAmount() + 2}</b>
-            </div>
+          <div className="cart-total-details">
+            <p>Subtotal</p>
+            <p>${getTotalCartAmount()}</p>
+          </div>
+          <hr />
+          <div className="cart-total-details">
+            <p>Delivery Fee</p>
+            <p>${getTotalCartAmount() === 0 ? 0 : 2}</p>
+          </div>
+          <hr />
+          <div className="cart-total-details">
+            <b>Total</b>
+            <b>${getTotalCartAmount() === 0 ? 0 : getTotalCartAmount() + 2}</b>
           </div>
           <button onClick={() => navigate('/order')}>PROCEED TO CHECKOUT</button>
         </div>
