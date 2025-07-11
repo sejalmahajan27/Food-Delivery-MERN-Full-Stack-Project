@@ -7,6 +7,10 @@ const Cart = () => {
   const { cartItems, food_list, removeFromCart, getTotalCartAmount, url } = useContext(StoreContext);
   const navigate = useNavigate();
 
+  if (!food_list || !Array.isArray(food_list)) {
+    return <p>Loading cart...</p>;
+  }
+
   return (
     <div className='cart'>
       <div className="cart-items">
@@ -18,31 +22,26 @@ const Cart = () => {
           <p>Total</p>
           <p>Remove</p>
         </div>
-        <br />
-        <hr />
-
-        {food_list && food_list.length > 0 ? (
-          food_list.map((item, index) => {
-            const quantity = cartItems?.[item._id] || 0;
-            if (quantity > 0) {
-              return (
-                <div key={index}>
-                  <div className='cart-items-title cart-items-item'>
-                    <img src={`${url}/images/${item.image}`} alt={item.name} />
-                    <p>{item.name}</p>
-                    <p>${item.price}</p>
-                    <p>{quantity}</p>
-                    <p>${item.price * quantity}</p>
-                    <p onClick={() => removeFromCart(item._id)} className='cross'>x</p>
-                  </div>
-                  <hr />
+        <br /><hr />
+        {food_list.map((item) => {
+          const quantity = cartItems[item._id] || 0;
+          if (quantity > 0) {
+            return (
+              <div key={item._id}>
+                <div className='cart-items-title cart-items-item'>
+                  <img src={`${url}/images/${item.image}`} alt={item.name} />
+                  <p>{item.name}</p>
+                  <p>${item.price}</p>
+                  <p>{quantity}</p>
+                  <p>${item.price * quantity}</p>
+                  <p onClick={() => removeFromCart(item._id)} className='cross'>x</p>
                 </div>
-              );
-            } else return null;
-          })
-        ) : (
-          <p>Loading cart items...</p>
-        )}
+                <hr />
+              </div>
+            );
+          }
+          return null;
+        })}
       </div>
 
       <div className="cart-bottom">
@@ -63,16 +62,6 @@ const Cart = () => {
             <b>${getTotalCartAmount() === 0 ? 0 : getTotalCartAmount() + 2}</b>
           </div>
           <button onClick={() => navigate('/order')}>PROCEED TO CHECKOUT</button>
-        </div>
-
-        <div className="cart-promocode">
-          <div>
-            <p>If you have a promo code, enter it here</p>
-            <div className='cart-promocode-input'>
-              <input type="text" placeholder='promo code' />
-              <button>Submit</button>
-            </div>
-          </div>
         </div>
       </div>
     </div>
