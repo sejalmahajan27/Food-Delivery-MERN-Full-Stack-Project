@@ -1,66 +1,89 @@
 import axios from "axios";
 import { createContext, useEffect, useState } from "react";
 
-export const StoreContext = createContext(null)
+// Create the context
+export const StoreContext = createContext(null);
 
+// Provider component
 const StoreContextProvider = (props) => {
 
     const [cartItems, setCartItems] = useState({});
-    const url = "https://food-delivery-mern-full-stack-project.onrender.com"
     const [token, setToken] = useState("");
-    const [food_list, setFoodList] = useState([])
+    const [food_list, setFoodList] = useState([]);
 
+    // ✅ Auto-switch URL between localhost and Render
+    const url = window.location.hostname === "localhost"
+        ? "http://localhost:4000"
+        : "https://food-delivery-mern-full-stack-project.onrender.com";
+
+    // ✅ Add item to cart and sync with backend if logged in
     const addToCart = async (itemId) => {
         if (!cartItems[itemId]) {
-            setCartItems((prev) => ({ ...prev, [itemId]: 1 }))
-        }
-        else {
-            setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] + 1 }))
+            setCartItems((prev) => ({ ...prev, [itemId]: 1 }));
+        } else {
+            setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] + 1 }));
         }
         if (token) {
-            await axios.post(url+"/api/cart/add",{itemId},{headers:{token}})
+            await axios.post(url + "/api/cart/add", { itemId }, { headers: { token } });
         }
-    }
+    };
 
+    // ✅ Remove item from cart and sync with backend
     const removeFromCart = async (itemId) => {
         setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] - 1 }));
         if (token) {
-            await axios.post(url+"/api/cart/remove",{itemId},{headers:{token}})
+            await axios.post(url + "/api/cart/remove", { itemId }, { headers: { token } });
         }
-    }
+    };
 
+    // ✅ Calculate total amount from cart
     const getTotalCartAmount = () => {
         let totalAmount = 0;
         for (const item in cartItems) {
             if (cartItems[item] > 0) {
-                let itemInfo = food_list.find((product) => product._id === item)
-                totalAmount += itemInfo.price * cartItems[item];
+                let itemInfo = food_list.find((product) => product._id === item);
+                if (itemInfo) {
+                    totalAmount += itemInfo.price * cartItems[item];
+                }
             }
         }
         return totalAmount;
-    }
+    };
 
-    const fetchFoofList = async () => {
-        const response = await axios.get(url + "/api/food/list");
-        setFoodList(response.data.data)
-    }
+    // ✅ Fetch food list from backend
+    const fetchFoodList = async () => {
+        try {
+            const response = await axios.get(url + "/api/food/list");
+            setFoodList(response.data.data);
+        } catch (error) {
+            console.error("Failed to fetch food list:", error);
+        }
+    };
 
-    const loadCartData = async (token)=>{
-        const response = await axios.post(url+"/api/cart/get",{},{headers:{token}});
-        setCartItems(response.data.cartData);
-    }
+    // ✅ Load saved cart for logged-in user
+    const loadCartData = async (token) => {
+        try {
+            const response = await axios.post(url + "/api/cart/get", {}, { headers: { token } });
+            setCartItems(response.data.cartData);
+        } catch (error) {
+            console.error("Failed to load cart data:", error);
+        }
+    };
 
+    // ✅ Initial data load on page load
     useEffect(() => {
         async function loadData() {
-            await fetchFoofList();
-            if (localStorage.getItem("token")) {
-                setToken(localStorage.getItem("token"))
-                await loadCartData(localStorage.getItem("token"));
+            await fetchFoodList();
+            const savedToken = localStorage.getItem("token");
+            if (savedToken) {
+                setToken(savedToken);
+                await loadCartData(savedToken);
             }
         }
         loadData();
-    }, [])
+    }, []);
 
+    // ✅ Context value
     const contextValue = {
         food_list,
         cartItems,
@@ -71,13 +94,13 @@ const StoreContextProvider = (props) => {
         url,
         token,
         setToken
-    }
+    };
 
     return (
         <StoreContext.Provider value={contextValue}>
             {props.children}
         </StoreContext.Provider>
-    )
-}
+    );
+};
 
-export default StoreContextProvider
+export default StoreContextProvider;
