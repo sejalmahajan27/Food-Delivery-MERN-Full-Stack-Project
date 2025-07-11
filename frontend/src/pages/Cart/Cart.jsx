@@ -20,11 +20,10 @@ const Cart = () => {
         </div>
         <br />
         <hr />
-        {food_list && food_list.map((item, index) => {
-          if (!item || !item._id) return null;
-          if (cartItems[item._id] > 0) {
+        {food_list && food_list.length > 0 && food_list.map((item, index) => {
+          if (cartItems && cartItems[item._id] > 0) {
             return (
-              <div key={item._id}>
+              <div key={index}>
                 <div className='cart-items-title cart-items-item'>
                   <img src={url + "/images/" + item.image} alt="" />
                   <p>{item.name}</p>
@@ -36,9 +35,11 @@ const Cart = () => {
                 <hr />
               </div>
             );
+          } else {
+            return null;
           }
-          return null;
         })}
+
         : (
         <p>Loading cart items...</p>
         )
