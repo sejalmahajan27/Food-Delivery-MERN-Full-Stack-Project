@@ -20,28 +20,28 @@ const Cart = () => {
         </div>
         <br />
         <hr />
-        {food_list && food_list.length > 0 ? (
-          food_list.map((item) => {
-            if (cartItems[item._id] > 0) {
-              return (
-                <div key={item._id}>
-                  <div className='cart-items-title cart-items-item'>
-                    <img src={url + "/images/" + item.image} alt={item.name} />
-                    <p>{item.name}</p>
-                    <p>${item.price}</p>
-                    <p>{cartItems[item._id]}</p>
-                    <p>${item.price * cartItems[item._id]}</p>
-                    <p onClick={() => removeFromCart(item._id)} className='cross'>x</p>
-                  </div>
-                  <hr />
+        {food_list && food_list.map((item, index) => {
+          if (!item || !item._id) return null;
+          if (cartItems[item._id] > 0) {
+            return (
+              <div key={item._id}>
+                <div className='cart-items-title cart-items-item'>
+                  <img src={url + "/images/" + item.image} alt="" />
+                  <p>{item.name}</p>
+                  <p>${item.price}</p>
+                  <p>{cartItems[item._id]}</p>
+                  <p>${item.price * cartItems[item._id]}</p>
+                  <p onClick={() => removeFromCart(item._id)} className='cross'>x</p>
                 </div>
-              );
-            }
-            return null;
-          })
-        ) : (
-          <p>Loading cart items...</p>
-        )}
+                <hr />
+              </div>
+            );
+          }
+          return null;
+        })}
+        : (
+        <p>Loading cart items...</p>
+        )
       </div>
 
       <div className="cart-bottom">

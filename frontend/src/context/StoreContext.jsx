@@ -50,15 +50,21 @@ const StoreContextProvider = (props) => {
         return totalAmount;
     };
 
-    // ✅ Fetch food list from backend
     const fetchFoodList = async () => {
         try {
             const response = await axios.get(url + "/api/food/list");
-            setFoodList(response.data.data);
+            if (response.data && response.data.data && Array.isArray(response.data.data)) {
+                setFoodList(response.data.data);
+            } else {
+                console.error("❌ Invalid food list format from backend:", response.data);
+                setFoodList([]); // Prevent crash
+            }
         } catch (error) {
-            console.error("Failed to fetch food list:", error);
+            console.error("❌ Failed to fetch food list:", error);
+            setFoodList([]); // Prevent crash on frontend
         }
     };
+
 
     // ✅ Load saved cart for logged-in user
     const loadCartData = async (token) => {
