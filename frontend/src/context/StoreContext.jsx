@@ -38,17 +38,17 @@ const StoreContextProvider = (props) => {
 
     // ✅ Calculate total amount from cart
     const getTotalCartAmount = () => {
-    let totalAmount = 0;
-    for (const itemId in cartItems) {
-        if (cartItems[itemId] > 0) {
-            const itemInfo = food_list.find((product) => product._id === itemId);
-            if (itemInfo) {
-                totalAmount += itemInfo.price * cartItems[itemId];
+        let totalAmount = 0;
+        for (const itemId in cartItems) {
+            if (cartItems[itemId] > 0) {
+                const itemInfo = food_list.find((product) => product._id === itemId);
+                if (itemInfo) {
+                    totalAmount += itemInfo.price * cartItems[itemId];
+                }
             }
         }
-    }
-    return totalAmount;
-};
+        return totalAmount;
+    };
 
 
     const fetchFoodList = async () => {
